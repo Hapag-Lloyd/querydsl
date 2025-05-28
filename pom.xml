@@ -724,7 +724,7 @@
         <module>querydsl-mongodb</module>
 
         <!-- Languages -->
-        <module>querydsl-scala</module>
+        <!-- <module>querydsl-scala</module> -->
         <module>querydsl-kotlin</module>
       </modules>
     </profile>
