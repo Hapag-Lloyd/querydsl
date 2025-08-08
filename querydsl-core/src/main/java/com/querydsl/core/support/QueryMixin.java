@@ -13,6 +13,8 @@
  */
 package com.querydsl.core.support;
 
+import java.lang.reflect.Method;
+
 import javax.annotation.Nullable;
 
 import com.querydsl.core.*;
@@ -336,12 +338,49 @@ public class QueryMixin<T> {
     @SuppressWarnings("unchecked")
     public final T orderBy(OrderSpecifier<?> spec) {
         Expression<?> e = convert(spec.getTarget(), Role.ORDER_BY);
+        if (spec.getTarget() instanceof Path) {
+            if (!spec.getTarget().equals(e)) {
+                metadata.addOrderBy(new OrderSpecifier(spec.getOrder(), e, spec.getNullHandling()));
+            } else {
+                metadata.addOrderBy(spec);
+            }
+        } else if (callerUsesQueryTemplate()) {
         if (!spec.getTarget().equals(e)) {
             metadata.addOrderBy(new OrderSpecifier(spec.getOrder(), e, spec.getNullHandling()));
         } else {
             metadata.addOrderBy(spec);
+            }
+        } else {
+            throw new IllegalStateException(
+                    "OrderSpecifier target must be a Path instance to ensure safety. Detected an unsafe operation related to CVE-2024-49203. Review the target and ensure it conforms to the expected type");
         }
         return self;
+    }
+
+    public static boolean callerUsesQueryTemplate() {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        for (int i = 2; i < stack.length; i++) {
+            try {
+                String className = stack[i].getClassName();
+                String methodName = stack[i].getMethodName();
+                if (className.startsWith("com.hlag.fis")) {
+                    Class<?> clazz = Class.forName(className);
+                    Method targetMethod = null;
+                    for (Method method : clazz.getDeclaredMethods()) {
+                        if (method.getName().equals(methodName) && method.isAnnotationPresent(UsesQueryTemplate.class)) {
+                            targetMethod = method;
+                            break;
+                        }
+                    }
+                    if (targetMethod != null) {
+                        return true;
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore any exceptions that occur while trying to load the class
+            }
+        }
+        return false;
     }
 
     public final T orderBy(OrderSpecifier<?>... o) {
