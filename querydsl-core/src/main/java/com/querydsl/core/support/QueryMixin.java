@@ -13,10 +13,6 @@
  */
 package com.querydsl.core.support;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.querydsl.core.*;
@@ -360,30 +356,7 @@ public class QueryMixin<T> {
     }
 
     public static boolean callerUsesQueryTemplate() {
-        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-
-        for (int i = 2; i < stack.length; i++) {
-            try {
-                String className = stack[i].getClassName();
-                String methodName = stack[i].getMethodName();
-                if (className.startsWith("com.hlag.fis")) {
-                    Class<?> clazz = Class.forName(className);
-
-                    // Stream to avoid explicit for-loop
-                    Optional<Method> maybeMethod = Arrays.stream(clazz.getDeclaredMethods())
-                            .filter(m -> m.getName().equals(methodName))
-                            .filter(m -> m.isAnnotationPresent(UsesQueryTemplate.class)).findFirst();
-
-                    if (maybeMethod.isPresent()) {
-                        return true;
-                    }
-                }
-            } catch (Exception e) {
-
-                // Ignore any exceptions that occur while trying to load the class
-            }
-        }
-        return false;
+       return QueryTemplateContext.isUsesQueryTemplate();
     }
 
     public final T orderBy(OrderSpecifier<?>... o) {
