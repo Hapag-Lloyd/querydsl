@@ -1687,7 +1687,7 @@ public abstract class AbstractJPATest {
         Cat kitten = savedCats.get(0);
         Cat noKitten = savedCats.get(savedCats.size() - 1);
 
-        ProjectionsFactory projections = new ProjectionsFactory(Module.JPA, getTarget()) {
+        ProjectionsFactory projections = new ProjectionsFactory(com.querydsl.core.Module.JPA, getTarget()) {
             @Override
             public <A,Q extends SimpleExpression<A>> Collection<Expression<?>> list(ListPath<A,Q> expr,
                     ListExpression<A,Q> other, A knownElement) {
@@ -1702,8 +1702,8 @@ public abstract class AbstractJPATest {
 
         QueryExecution standardTest = new QueryExecution(
                 projections,
-                new FilterFactory(projections, Module.JPA, getTarget()),
-                new MatchingFiltersFactory(Module.JPA, getTarget())) {
+                new FilterFactory(projections, com.querydsl.core.Module.JPA, getTarget()),
+                new MatchingFiltersFactory(com.querydsl.core.Module.JPA, getTarget())) {
 
             @Override
             protected Fetchable<?> createQuery() {

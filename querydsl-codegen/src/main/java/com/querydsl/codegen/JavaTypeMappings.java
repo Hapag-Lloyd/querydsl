@@ -27,7 +27,7 @@ import com.querydsl.core.types.dsl.*;
 public class JavaTypeMappings extends TypeMappings {
 
     public JavaTypeMappings() {
-        register(TypeCategory.STRING,     StringExpression.class,     StringPath.class,     StringTemplate.class);
+        register(TypeCategory.STRING,     StringExpression.class,     StringPath.class,     com.querydsl.core.types.dsl.StringTemplate.class);
         register(TypeCategory.BOOLEAN,    BooleanExpression.class,    BooleanPath.class,    BooleanTemplate.class);
         register(TypeCategory.COMPARABLE, ComparableExpression.class, ComparablePath.class, ComparableTemplate.class);
         register(TypeCategory.ENUM,       EnumExpression.class,       EnumPath.class,       EnumTemplate.class);
