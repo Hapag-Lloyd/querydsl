@@ -31,6 +31,10 @@ public abstract class SimpleExpression<T> extends DslExpression<T> {
 
     private static final long serialVersionUID = -4405387187738167105L;
 
+    private static final BooleanExpression ALWAYS_FALSE = Expressions.booleanTemplate("17 = 19");
+
+    private static final BooleanExpression ALWAYS_TRUE  = Expressions.booleanTemplate("17 <> 19");
+
     @Nullable
     private transient volatile NumberExpression<Long> count;
 
@@ -188,6 +192,9 @@ public abstract class SimpleExpression<T> extends DslExpression<T> {
      * @return this in right
      */
     public BooleanExpression in(Collection<? extends T> right) {
+        if (right.isEmpty()) {
+            return ALWAYS_FALSE;
+        }
         if (right.size() == 1) {
             return eq(right.iterator().next());
         } else {
@@ -290,6 +297,9 @@ public abstract class SimpleExpression<T> extends DslExpression<T> {
      * @return this not in right
      */
     public BooleanExpression notIn(Collection<? extends T> right) {
+        if (right.isEmpty()) {
+            return ALWAYS_TRUE;
+        }
         if (right.size() == 1) {
             return ne(right.iterator().next());
         } else {
